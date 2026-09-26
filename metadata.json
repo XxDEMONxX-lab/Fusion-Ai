@@ -1,0 +1,7 @@
+{
+  "name": "AI Fusion Hub",
+  "description": "Multi-model AI orchestration platform with intelligent auto-selection, specialized role distribution, and unified answer synthesis powered by OpenRouter.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
