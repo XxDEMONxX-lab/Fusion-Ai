@@ -1,6 +1,7 @@
-import React from 'react';
-import { Sparkles, Cpu, Layers, ArrowRight, Zap, Shield, Key, History, Activity, BarChart3, Database } from 'lucide-react';
-import { TaskSession, ModelInfo } from '../types';
+import React, { useState } from 'react';
+import { Sparkles, Cpu, Layers, ArrowRight, Zap, Shield, Key, History, Activity, BarChart3, Database, Timer } from 'lucide-react';
+import { TaskSession, ModelInfo, ModelResult } from '../types';
+import { ModelLatencyChart } from './ModelLatencyChart';
 
 interface DashboardViewProps {
   isConnected: boolean;
@@ -37,6 +38,60 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     // approx $0.03 per task on average
     return acc + 0.03;
   }, 0);
+
+  const [selectedPerformanceSessionId, setSelectedPerformanceSessionId] = useState<string>(
+    recentTasks[0]?.id || ''
+  );
+
+  const activeSessionForChart = recentTasks.find(t => t.id === selectedPerformanceSessionId) || recentTasks[0];
+
+  const benchmarkModelResults: ModelResult[] = [
+    {
+      modelId: 'anthropic/claude-3.5-sonnet',
+      modelName: 'Claude 3.5 Sonnet',
+      provider: 'Anthropic',
+      roleName: 'System Architect & Planner',
+      status: 'completed',
+      durationMs: 4180,
+      tokenUsage: { promptTokens: 520, completionTokens: 980, totalTokens: 1500 }
+    },
+    {
+      modelId: 'openai/gpt-4o',
+      modelName: 'GPT-4o',
+      provider: 'OpenAI',
+      roleName: 'Lead Implementation Engineer',
+      status: 'completed',
+      durationMs: 3350,
+      tokenUsage: { promptTokens: 520, completionTokens: 1120, totalTokens: 1640 }
+    },
+    {
+      modelId: 'google/gemini-2.5-flash',
+      modelName: 'Gemini 2.5 Flash',
+      provider: 'Google',
+      roleName: 'Rapid Prototype Specialist',
+      status: 'completed',
+      durationMs: 1120,
+      tokenUsage: { promptTokens: 520, completionTokens: 890, totalTokens: 1410 }
+    },
+    {
+      modelId: 'deepseek/deepseek-r1',
+      modelName: 'DeepSeek R1',
+      provider: 'DeepSeek',
+      roleName: 'Security & Edge-Case Auditor',
+      status: 'completed',
+      durationMs: 8450,
+      tokenUsage: { promptTokens: 520, completionTokens: 1850, totalTokens: 2370 }
+    },
+    {
+      modelId: 'meta-llama/llama-3.3-70b-instruct',
+      modelName: 'Llama 3.3 70B',
+      provider: 'Meta',
+      roleName: 'Performance Reviewer',
+      status: 'completed',
+      durationMs: 2790,
+      tokenUsage: { promptTokens: 520, completionTokens: 760, totalTokens: 1280 }
+    }
+  ];
 
   const STARTER_PRESETS = [
     {
@@ -206,6 +261,46 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Model Mix Latency & Bottleneck Intelligence */}
+      <div className="space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h2 className="text-sm font-semibold text-white flex items-center gap-2">
+              <BarChart3 className="h-4 w-4 text-purple-400" />
+              <span>Multi-Model Latency & Bottleneck Intelligence</span>
+            </h2>
+            <p className="text-xs text-neutral-400 mt-0.5">
+              Visualize response times (durationMs) to pinpoint bottlenecks and balance speed with depth
+            </p>
+          </div>
+
+          {recentTasks.length > 0 && (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-neutral-400 font-mono">Dataset:</span>
+              <select
+                value={selectedPerformanceSessionId || recentTasks[0]?.id}
+                onChange={(e) => setSelectedPerformanceSessionId(e.target.value)}
+                className="bg-neutral-900 border border-neutral-700 text-neutral-200 text-xs rounded-lg px-2.5 py-1.5 focus:border-purple-500 focus:outline-hidden"
+              >
+                {recentTasks.map((t, idx) => (
+                  <option key={t.id} value={t.id}>
+                    {t.title ? `${t.title.slice(0, 32)}...` : `Task #${idx + 1}`} ({t.modelResults.length} models)
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+        </div>
+
+        <ModelLatencyChart
+          modelResults={activeSessionForChart ? activeSessionForChart.modelResults : benchmarkModelResults}
+          synthesisResult={activeSessionForChart?.synthesisResult}
+          title={activeSessionForChart ? `Latency Analysis: ${activeSessionForChart.title || activeSessionForChart.task.slice(0, 45) + '...'}` : 'Reference Model Mix Latency Profile'}
+          subtitle={activeSessionForChart ? `Measured response durations across ${activeSessionForChart.modelResults.length} orchestrated models` : 'Baseline latency characteristics across premier OpenRouter model architectures'}
+          showRecommendations={true}
+        />
       </div>
 
       {/* Recent Tasks List */}

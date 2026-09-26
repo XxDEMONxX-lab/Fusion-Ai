@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Sparkles, Copy, Check, Download, RefreshCw, Layers, CheckCircle2, ChevronRight, Eye, Code2, AlertTriangle, ArrowLeft } from 'lucide-react';
+import { Sparkles, Copy, Check, Download, RefreshCw, Layers, CheckCircle2, ChevronRight, Eye, Code2, AlertTriangle, ArrowLeft, BarChart3, Timer, Zap } from 'lucide-react';
 import { TaskSession } from '../types';
+import { ModelLatencyChart } from './ModelLatencyChart';
 
 interface FinalAnswerViewProps {
   session: TaskSession;
@@ -18,7 +19,7 @@ export const FinalAnswerView: React.FC<FinalAnswerViewProps> = ({
   onStartNewTask
 }) => {
   const [copied, setCopied] = useState(false);
-  const [activeTab, setActiveTab] = useState<'synthesis' | 'comparison' | 'reasoning'>('synthesis');
+  const [activeTab, setActiveTab] = useState<'synthesis' | 'comparison' | 'performance' | 'reasoning'>('synthesis');
   const [selectedInspectModel, setSelectedInspectModel] = useState<string>(
     session.modelResults[0]?.modelId || ''
   );
@@ -227,6 +228,19 @@ export const FinalAnswerView: React.FC<FinalAnswerViewProps> = ({
 
         <button
           type="button"
+          onClick={() => setActiveTab('performance')}
+          className={`flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-md transition-all ${
+            activeTab === 'performance'
+              ? 'bg-purple-600 text-white shadow-xs'
+              : 'text-neutral-400 hover:text-neutral-200'
+          }`}
+        >
+          <BarChart3 className="h-3.5 w-3.5" />
+          <span>Performance & Bottlenecks</span>
+        </button>
+
+        <button
+          type="button"
           onClick={() => setActiveTab('reasoning')}
           className={`flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-md transition-all ${
             activeTab === 'reasoning'
@@ -241,11 +255,38 @@ export const FinalAnswerView: React.FC<FinalAnswerViewProps> = ({
 
       {/* Main Tab Content */}
       {activeTab === 'synthesis' && (
-        <div className="rounded-xl border border-neutral-800 bg-neutral-900/80 p-6 shadow-xl">
-          <div className="prose prose-invert max-w-none text-sm text-neutral-200 leading-relaxed font-sans whitespace-pre-wrap selection:bg-purple-500/30">
-            {finalAnswer}
+        <div className="space-y-4">
+          <div className="rounded-xl border border-neutral-800 bg-neutral-900/80 p-6 shadow-xl">
+            <div className="prose prose-invert max-w-none text-sm text-neutral-200 leading-relaxed font-sans whitespace-pre-wrap selection:bg-purple-500/30">
+              {finalAnswer}
+            </div>
+          </div>
+
+          {/* Quick Latency Benchmark Jump Banner */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl border border-neutral-800/80 bg-neutral-900/60 text-xs">
+            <div className="flex items-center gap-2 text-neutral-300">
+              <Timer className="h-4 w-4 text-purple-400 shrink-0" />
+              <span>
+                Want to analyze which model was your latency bottleneck?
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setActiveTab('performance')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-purple-300 hover:text-white border border-neutral-700 font-mono text-[11px] transition-colors w-fit"
+            >
+              <BarChart3 className="h-3.5 w-3.5" />
+              <span>Inspect Duration Bar Chart →</span>
+            </button>
           </div>
         </div>
+      )}
+
+      {activeTab === 'performance' && (
+        <ModelLatencyChart
+          modelResults={session.modelResults}
+          synthesisResult={session.synthesisResult}
+        />
       )}
 
       {activeTab === 'comparison' && (
