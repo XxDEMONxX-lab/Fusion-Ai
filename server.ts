@@ -762,10 +762,14 @@ Please produce the definitive synthesized solution now.`;
 
 // Start Express Server with Vite integration
 async function startServer() {
+  // Get the root project directory (parent of the directory containing this file)
+  const rootDir = path.resolve(__dirname, '..');
+  const distPath = path.resolve(rootDir, 'dist');
+
   if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.resolve(__dirname, 'dist')));
+    app.use(express.static(distPath));
     app.get('*', (_req: Request, res: Response) => {
-      res.sendFile(path.resolve(__dirname, 'dist', 'index.html'));
+      res.sendFile(path.resolve(distPath, 'index.html'));
     });
   } else {
     const vite = await createViteServer({
