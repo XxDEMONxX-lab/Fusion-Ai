@@ -1,4 +1,5 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
@@ -381,7 +382,7 @@ app.post('/api/auto-select', async (req: Request, res: Response) => {
       modelName: wantAffordable ? 'Llama 3.3 70B Instruct' : 'Claude 3.5 Sonnet',
       provider: wantAffordable ? 'Meta' : 'Anthropic',
       roleName: 'System Architect & Planner',
-      roleSystemPrompt: 'You are a Senior System Architect. Analyze requirements, design the overall structure, module breakdown, state flow, and data interfaces before implementation. Focus on modularity, scalability, and clean structure.',
+      roleSystemPrompt: 'You are a Senior System Architect. Analyze requirements, design the overall structure, module breakdown, state flow, and data interfaces before implementation. Focus on m[...]
       reason: 'Unmatched architectural depth and structural planning clarity.',
       contextLength: wantAffordable ? 128000 : 200000,
       pricingDisplay: wantAffordable ? '$0.18 / $0.35 per 1M' : '$3.00 / $15.00 per 1M',
@@ -394,7 +395,7 @@ app.post('/api/auto-select', async (req: Request, res: Response) => {
       modelName: wantFast ? 'Gemini 2.5 Flash' : (wantAffordable ? 'DeepSeek V3' : 'GPT-4o'),
       provider: wantFast ? 'Google' : (wantAffordable ? 'DeepSeek' : 'OpenAI'),
       roleName: 'Lead Implementation Engineer',
-      roleSystemPrompt: 'You are the Lead Implementation Engineer. Write complete, production-grade, idiomatic code with full logic, clear typings, and zero placeholders. Implement the core mechanisms requested with extreme fidelity.',
+      roleSystemPrompt: 'You are the Lead Implementation Engineer. Write complete, production-grade, idiomatic code with full logic, clear typings, and zero placeholders. Implement the core mecha[...]
       reason: 'Superior API fidelity, high token throughput, and precise code generation.',
       contextLength: wantFast ? 1000000 : (wantAffordable ? 64000 : 128000),
       pricingDisplay: wantFast ? '$0.075 / $0.30 per 1M' : (wantAffordable ? '$0.14 / $0.28 per 1M' : '$2.50 / $10.00 per 1M'),
@@ -407,7 +408,7 @@ app.post('/api/auto-select', async (req: Request, res: Response) => {
       modelName: 'DeepSeek R1',
       provider: 'DeepSeek',
       roleName: 'Security & Edge-Case Auditor',
-      roleSystemPrompt: 'You are a Principal Security Auditor and Vulnerability Specialist. Ruthlessly inspect the proposed solutions for injection flaws, race conditions, permission oversights, uncaught exceptions, and edge cases. Provide hardened code mitigations.',
+      roleSystemPrompt: 'You are a Principal Security Auditor and Vulnerability Specialist. Ruthlessly inspect the proposed solutions for injection flaws, race conditions, permission oversights, [...]
       reason: 'Deep reinforcement reasoning reveals obscure edge cases, vulnerability paths, and security blindspots.',
       contextLength: 64000,
       pricingDisplay: '$0.55 / $2.19 per 1M',
@@ -421,7 +422,7 @@ app.post('/api/auto-select', async (req: Request, res: Response) => {
         modelName: wantAffordable ? 'Qwen 2.5 Coder 32B' : 'Gemini 2.5 Pro',
         provider: wantAffordable ? 'Qwen' : 'Google',
         roleName: 'Performance & Robustness Reviewer',
-        roleSystemPrompt: 'You are a Performance & Reliability Engineer. Evaluate memory consumption, async handling, rate limiting, logging telemetry, and runtime resilience. Suggest exact optimizations and error recovery strategies.',
+        roleSystemPrompt: 'You are a Performance & Reliability Engineer. Evaluate memory consumption, async handling, rate limiting, logging telemetry, and runtime resilience. Suggest exact optim[...]
         reason: 'Specialized deep context inspection for runtime reliability and memory/latency optimizations.',
         contextLength: wantAffordable ? 32768 : 1000000,
         pricingDisplay: wantAffordable ? '$0.07 / $0.16 per 1M' : '$1.25 / $5.00 per 1M',
@@ -533,7 +534,7 @@ app.post('/api/auto-select', async (req: Request, res: Response) => {
   const estimatedCost = wantAffordable ? '~$0.002 - $0.008' : '~$0.02 - $0.06';
   const estimatedSpeed = wantFast ? 'Fast (~3-6s)' : 'Thorough (~8-15s)';
 
-  const selectionReasoning = `Ads Auto Mode evaluated the task "${taskCategory}" against active OpenRouter model benchmarks. Selected ${selectedModels.length} complementary models across ${new Set(selectedModels.map(m => m.provider)).size} providers to prevent single-model blind spots. Assigned specialized system roles to maximize architectural soundness, code completeness, and edge-case security.`;
+  const selectionReasoning = `Ads Auto Mode evaluated the task "${taskCategory}" against active OpenRouter model benchmarks. Selected ${selectedModels.length} complementary models across ${new Set(selectedModels.map(m => m.provider)).size} providers for balanced expertise coverage. The lineup emphasizes complementary strengths: strategic depth, rapid implementation, security rigor, and optimization analysis. Synthesis by Claude ensures seamless integration of multi-model outputs into a cohesive, production-ready solution.`;
 
   return res.json({
     taskCategory,
